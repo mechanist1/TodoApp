@@ -14,5 +14,6 @@ services:
       - C:\Users\ilyess\IdeaProjects\JWTTodoApp:/var/jenkins_home/workspace/JWTTodoApp  # mount project
       - C:\Users\ilyess\.m2:/root/.m2          # optional: cache Maven dependencies
 
+
 volumes:
   jenkins_home:
