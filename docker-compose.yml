@@ -6,14 +6,18 @@ services:
     container_name: jenkins
     restart: unless-stopped
     ports:
-      - "8080:8080"   # Jenkins UI
-      - "50000:50000" # Agent communication
+      - "8080:8080"
+      - "50000:50000"
     volumes:
-      - jenkins_home:/var/jenkins_home           # Jenkins config
-      - /var/run/docker.sock:/var/run/docker.sock  # access host Docker
-      - C:\Users\ilyess\IdeaProjects\JWTTodoApp:/var/jenkins_home/workspace/JWTTodoApp  # mount project
-      - C:\Users\ilyess\.m2:/root/.m2          # optional: cache Maven dependencies
-
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock  # allow access to host Docker
+      - C:\Users\ilyess\IdeaProjects\JWTTodoApp:/var/jenkins_home/workspace/JWTTodoApp
+    user: root
+    entrypoint:
+      - bash
+      - -c
+      - |
+        apt-get update && apt-get install -y docker.io git && /usr/bin/tini -- /usr/local/bin/jenkins.sh
 
 volumes:
   jenkins_home:
