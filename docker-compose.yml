@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   jenkins:
-    image: jenkins/jenkins:lts-jdk17
+    build: ./jenkins
     container_name: jenkins
     restart: unless-stopped
     ports:
@@ -10,14 +8,8 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock  # allow access to host Docker
+      - /var/run/docker.sock:/var/run/docker.sock
       - C:\Users\ilyess\IdeaProjects\JWTTodoApp:/var/jenkins_home/workspace/JWTTodoApp
-    user: root
-    entrypoint:
-      - bash
-      - -c
-      - |
-        apt-get update && apt-get install -y docker.io git && /usr/bin/tini -- /usr/local/bin/jenkins.sh
 
 volumes:
   jenkins_home:

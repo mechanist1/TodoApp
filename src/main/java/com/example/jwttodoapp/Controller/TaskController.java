@@ -2,41 +2,52 @@ package com.example.jwttodoapp.Controller;
 
 import com.example.jwttodoapp.Module.Task;
 import com.example.jwttodoapp.Services.TaskService;
-import org.springframework.cache.annotation.Cacheable;
+import lombok.RequiredArgsConstructor;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/tasks")
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class TaskController {
 
     private TaskService taskService;
 
 
-    @GetMapping("/get/{id}")
+    @QueryMapping
 
-    public ResponseEntity<Task> getTask(@PathVariable Long id) {
-        return ResponseEntity.ok(taskService.getTask(id));
+    public Task getTask(@Argument Long id) {
+        return taskService.getTask(id);
     }
-    @GetMapping("/getAll")
+
+    @QueryMapping
     public List<Task> getAllTasks() {
-        System.out.println("Fetching from DB..."+taskService.getAllTasks());
-        return taskService.getAllTasks();
+        return taskService.getAllTasks(); // 🚀 this is cached in Redis
     }
 
-    @PostMapping("/post")
-    public ResponseEntity<String> createTask(@RequestBody Task task) {
-        taskService.SaveTask(task);
-        return ResponseEntity.ok("Task created");
+    @MutationMapping
+    public Task createTask(@Argument String title,
+                           @Argument String description,
+                           @Argument String name) {
+        Task t = new Task();
+        t.setTitle(title);
+        t.setDescription(description);
+        t.setName(name);
+        taskService.SaveTask(t);
+        return t;
     }
-    @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteTask(@RequestBody Long id) {
+
+    @MutationMapping
+    public String deleteTask(@Argument Long id) {
         taskService.DeleteTask(id);
-        return ResponseEntity.ok("Task deleted");
+        return "Task deleted";
     }
 }
